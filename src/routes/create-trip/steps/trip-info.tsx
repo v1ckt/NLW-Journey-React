@@ -15,6 +15,20 @@ interface TripInfoFormProps {
   eventDateRange: DateRange | undefined;
 }
 
+const displayDate = (date: DateRange | undefined) => {
+  const from = date?.from;
+  const to = date?.to;
+  return date && from && to
+    ? from.getMonth() === to.getMonth()
+      ? format(from, "dd").concat(
+          format(to, "' a ' dd ' de ' MMMM", { locale: ptBR })
+        )
+      : format(from, "dd ' de ' MMMM", { locale: ptBR }).concat(
+          format(to, "' a ' dd ' de ' MMMM", { locale: ptBR })
+        )
+    : "Quando?";
+};
+
 export function TripInfoForm({
   isGuestsInputOpen,
   closeGuestsInput,
@@ -26,21 +40,8 @@ export function TripInfoForm({
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
   const openDatePicker = () => setIsDatePickerOpen(true);
   const closeDatePicker = () => setIsDatePickerOpen(false);
-
-  const displayDate = (date: DateRange | undefined) => {
-    const from = date?.from;
-    const to = date?.to;
-    return date && from && to
-      ? from.getMonth() === to.getMonth()
-        ? format(from, "dd").concat(
-            format(to, "' a ' dd ' de ' MMMM", { locale: ptBR })
-          )
-        : format(from, "dd ' de ' MMMM", { locale: ptBR }).concat(
-            format(to, "' a ' dd ' de ' MMMM", { locale: ptBR })
-          )
-      : "Quando?";
-  };
-
+  
+  displayDate(eventDateRange);
   return (
     <div className="h-16 bg-zinc-900 px-4 rounded-xl flex items-center shadow-shape gap-3">
       <div className="flex items-center gap-2 flex-1">
@@ -75,6 +76,7 @@ export function TripInfoForm({
               </button>
             </div>
             <DayPicker
+              locale={ptBR}
               mode="range"
               selected={eventDateRange}
               onSelect={setEventDateRange}

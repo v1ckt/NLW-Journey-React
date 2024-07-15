@@ -5,18 +5,19 @@ import { ConfirmModal } from "./confirmmodal";
 import { TripInfoForm } from "./steps/trip-info";
 import { GuestsInfo } from "./steps/guests-info";
 import { DateRange } from "react-day-picker";
-import { api } from "../../lib/axios";
+import { TripInfo, TripInfoContext } from "../../contexts/tripinfocontext";
 
 export function CreateTripPage() {
   const [isGuestsInputOpen, setisGuestInputOpen] = useState(false);
   const [isGuestsModalOpen, setisGuestModalOpen] = useState(false);
   const [isConfirmModalOpen, setisConfirmModalOpen] = useState(false);
   const [emailsToInvite, setEmailsToInvite] = useState<string[]>([]);
+  const [aS, setaS] = useState<TripInfo>();
 
   const [destination, setDestination] = useState<string>("");
   const [ownerName, setOwnerName] = useState<string>("");
   const [ownerEmail, setOwnerEmail] = useState<string>("");
-  const [eventDateRange, setEventDateRange] = useState<DateRange | undefined>();
+  const [eventDateRange, setEventDateRange] = useState<DateRange>();
 
   const navigate = useNavigate();
 
@@ -40,34 +41,23 @@ export function CreateTripPage() {
   function removeEmailtoInvite(email: string) {
     setEmailsToInvite(emailsToInvite.filter((e) => e !== email));
   }
+  const tripId = Math.floor(Math.random() * 1000);
 
   async function createTrip(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    console.log(destination);
-    console.log(ownerName);
-    console.log(ownerEmail);
-    console.log(emailsToInvite);
-    console.log(eventDateRange);
 
-    if (!destination) return;
+    // if (!destination) return;
     if (!eventDateRange?.from || !eventDateRange?.to) return;
-    if (!ownerName) return;
-    if (!ownerEmail) return;
-    if (!emailsToInvite.length) return;
+    // if (!ownerName) return;
+    // if (!ownerEmail) return;
+    // if (!emailsToInvite.length) return;
 
-    const response = await api.post("/trips", {
-      destination,
-      starts_at: eventDateRange?.from,
-      ends_at: eventDateRange?.to,
-      emails_to_invite: emailsToInvite,
-      owner_name: ownerName,
-      owner_email: ownerName,
-    });
+    // const { tripId } = response.data;]
 
-    const { tripId } = response.data;
-    navigate(`/trips/${tripId}`);
+    // navigate(`/trips/${tripId}`, { state: aS });
   }
 
+  console.log(aS);
   return (
     <div className="h-screen flex items-center justify-center bg-pattern bg-no-repeat bg-center">
       <div className="max-w-3xl w-full px-6 text-center space-y-10">
@@ -79,14 +69,16 @@ export function CreateTripPage() {
         </div>
 
         <div className="space-y-4">
-          <TripInfoForm
-            closeGuestsInput={closeGuestsInput}
-            isGuestsInputOpen={isGuestsInputOpen}
-            openGuestsInput={openGuestsInput}
-            setDestination={setDestination}
-            setEventDateRange={setEventDateRange}
-            eventDateRange={eventDateRange}
-          />
+          <TripInfoContext.Provider value={aS}>
+            <TripInfoForm
+              closeGuestsInput={closeGuestsInput}
+              isGuestsInputOpen={isGuestsInputOpen}
+              openGuestsInput={openGuestsInput}
+              setDestination={setDestination}
+              setEventDateRange={setEventDateRange}
+              eventDateRange={eventDateRange}
+            />
+          </TripInfoContext.Provider>
 
           {isGuestsInputOpen && (
             <GuestsInfo
@@ -118,17 +110,21 @@ export function CreateTripPage() {
           removeEmailtoInvite={removeEmailtoInvite}
           closeGuestsModal={closeGuestsModal}
           openGuestsInput={openGuestsInput}
-          closeConfirmModal={closeConfirmModal}
         ></InviteGuestsModal>
       )}
 
       {isConfirmModalOpen && (
-        <ConfirmModal
-          closeConfirmModal={closeConfirmModal}
-          createTrip={createTrip}
-          setOwnerName={setOwnerName}
-          setOwnerEmail={setOwnerEmail}
-        ></ConfirmModal>
+        <TripInfoContext.Consumer>
+          {(value) => (
+            <ConfirmModal
+              closeConfirmModal={closeConfirmModal}
+              createTrip={createTrip}
+              setOwnerName={setOwnerName}
+              setOwnerEmail={setOwnerEmail}
+              tripInfo={value} // Aqui você usa o valor do contexto
+            />
+          )}
+        </TripInfoContext.Consumer>
       )}
     </div>
   );

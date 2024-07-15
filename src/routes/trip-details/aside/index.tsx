@@ -1,6 +1,6 @@
 import { Link2, Plus, UserCog } from "lucide-react";
 import { CheckBox } from "../../../components/checkbox";
-import { useState } from "react";
+import { FormEvent, useState } from "react";
 import { InsertLink } from "./insertlinkmodal";
 import { InviteGuestsModal } from "../../create-trip/inviteguestsmodal";
 import { Button } from "../../../components/button";
@@ -20,7 +20,6 @@ export function Aside(props: AsideProps) {
   const closeAddModal = () => setAddModal(false);
   const openGuestsModal = () => setisGuestModalOpen(true);
   const closeGuestsModal = () => setisGuestModalOpen(false);
-  const closeConfirmModal = () => setisConfirmModalOpen(false);
   const openGuestsInput = () => setisGuestInputOpen(true);
 
   function addNewEmailToInvite(event: FormEvent<HTMLFormElement>) {
@@ -94,7 +93,7 @@ export function Aside(props: AsideProps) {
           removeEmailtoInvite={removeEmailtoInvite}
           closeGuestsModal={closeGuestsModal}
           openGuestsInput={openGuestsInput}
-          closeConfirmModal={closeConfirmModal}
+          isGuestsInputOpen={isGuestsInputOpen}
         ></InviteGuestsModal>
       )}
     </aside>

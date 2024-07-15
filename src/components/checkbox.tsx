@@ -26,6 +26,7 @@ export function CheckBox({
     <label
       className={className ? className : "flex items-center gap-2 flex-1"}
       onClick={handleCheck}
+      onChange={onChange}
     >
       {isRight && <span className="flex flex-1 items-center">{children}</span>}
       {checked || isChecked ? (
